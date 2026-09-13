@@ -1,46 +1,49 @@
-# 🛡️ Railo MCP Server
+# Railo MCP Server
 
-> **The Mathematical Safety Guardrail for AI Code Generation.**  
-> Formally verify AI-generated security patches and eliminate hallucinations in Cursor, Claude Desktop, and Windsurf.
+> Mathematical Safety Guardrail for AI Code Generation.  
+> Formally verify AI-generated security patches using First-Order Logic SMT invariants and Concrete Syntax Tree transformations.
 
-[![Website](https://img.shields.io/badge/website-railo.dev-orange)](https://railo.dev)
-[![Z3 Solver](https://img.shields.io/badge/SMT%20Solver-Microsoft%20Z3-blue)](https://github.com/Z3Prover/z3)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
----
-
-## ⚡ The Problem: LLMs Guess Security Fixes
-
-When developers ask Copilot, Cursor, or Claude to fix a vulnerability, LLMs frequently produce code that looks right to a human, but fails under security scrutiny:
-* **Incomplete sanitization:** Writing naive regex or `.startswith()` checks instead of canonical path containment (`os.path.commonpath`).
-* **Broken syntax:** Generating unclosed brackets, missing imports, or changed function signatures that break unit tests.
-* **Hallucinated packages:** Importing non-existent libraries, creating brand new supply-chain risks.
-
-**Railo MCP connects your AI assistant to deterministic formal verification.**
+[![Documentation](https://img.shields.io/badge/docs-railo.dev-000000?style=flat-square)](https://railo.dev)
+[![SMT Solver](https://img.shields.io/badge/solver-Microsoft%20Z3-blue?style=flat-square)](https://github.com/Z3Prover/z3)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square)](https://opensource.org/licenses/MIT)
 
 ---
 
-## 🛠️ Tools Exposed
+## Architectural Problem: Probabilistic Code Remediation
 
-### 1. `explain_vulnerability` (Always Free & Local)
-Retrieves the mathematical First-Order Logic safety invariant, AST pattern, and canonical remediation code for a specific CWE.
-* **Supported:** `CWE-89` (SQLi), `CWE-22` (Path Traversal), `CWE-78` (Command Injection), `CWE-798` (Hardcoded Secrets), `CWE-918` (SSRF), `CWE-79` (XSS), `CWE-352` (CSRF), `CWE-601` (Open Redirect).
+When LLMs (GPT-4o, Claude 3.5 Sonnet, GitHub Copilot) generate security patches, they operate via autoregressive next-token prediction. In security-critical paths, probabilistic fixes introduce high-severity failure modes:
 
-### 2. `verify_syntax` (Always Free & Local)
-Validates that proposed code is syntactically sound, parses into an Abstract Syntax Tree without grammar errors, and detects unclosed tokens.
+* **Incomplete Sanitization:** Generating naive regex checks or `.startswith()` comparisons instead of canonical path containment (`os.path.commonpath`), leaving trivial bypasses.
+* **Grammar and Structural Invalidation:** Emitting syntax errors, unclosed delimiters, or invalid method signatures that regress native test suites.
+* **Package Hallucination:** Referencing unverified external dependencies, introducing supply-chain vulnerabilities.
+
+Railo MCP provides a deterministic verification layer that evaluates proposed patches against formal First-Order Logic constraints before code is committed.
+
+---
+
+## Exposed Tools
+
+### 1. `explain_vulnerability`
+Returns the formal First-Order Logic safety invariant, AST pattern, and canonical remediation implementation for a specified CWE.
+* **Scope:** `CWE-89` (SQL Injection), `CWE-22` (Path Traversal), `CWE-78` (Command Injection), `CWE-798` (Hardcoded Credentials), `CWE-918` (SSRF), `CWE-79` (XSS), `CWE-352` (CSRF), `CWE-601` (Open Redirect).
+* **Execution:** Local, zero-latency, no network dependency.
+
+### 2. `verify_syntax`
+Parses proposed code through Python's Concrete Syntax Tree grammar. Detects unclosed delimiters, invalid indentation, and AST syntax errors prior to commit.
+* **Execution:** Local AST parser.
 
 ### 3. `verify_security_patch`
-Submits a proposed patch diff to the Railo formal verification engine. Evaluates whether the fix eliminates the vulnerability invariant without introducing regressions.
-* Returns `VERIFIED (UNSAT)` if mathematically proved safe.
+Submits a patch diff for formal verification against target CWE domain invariants.
+* Returns `VERIFIED (UNSAT)` if the solver proves no input can alter structural execution.
 * Returns `FAILED (SAT)` with a concrete counter-example payload if the vulnerability survives.
 
 ---
 
-## 🚀 Quickstart
+## Installation and Configuration
 
-### 1. Installation
+### Package Execution
 
-You can run Railo MCP directly via `uvx`:
+Run directly via `uvx`:
 
 ```bash
 uvx railo-mcp
@@ -54,10 +57,11 @@ pip install railo-mcp
 
 ---
 
-### 2. Configuration
+### Client Configuration
 
-#### 🟢 Cursor (`.cursor/mcp.json`)
-Add Railo to your project's `.cursor/mcp.json`:
+#### Cursor (`.cursor/mcp.json`)
+
+Add the following block to `.cursor/mcp.json` in your project root:
 
 ```json
 {
@@ -73,8 +77,9 @@ Add Railo to your project's `.cursor/mcp.json`:
 }
 ```
 
-#### 🟠 Claude Desktop (`claude_desktop_config.json`)
-Add to `claude_desktop_config.json`:
+#### Claude Desktop (`claude_desktop_config.json`)
+
+Add the server definition to `claude_desktop_config.json`:
 
 ```json
 {
@@ -92,14 +97,14 @@ Add to `claude_desktop_config.json`:
 
 ---
 
-## 🔑 Getting an API Key
+## Authentication and API Keys
 
-1. Sign up at **[railo.dev](https://railo.dev)**.
-2. Go to **Dashboard → [API Keys](https://railo.dev/app/api-keys)**.
-3. Click **"Generate Key"** (Free tier includes 20 verifications/month).
+1. Sign up at [railo.dev](https://railo.dev).
+2. Navigate to [Dashboard → API Keys](https://railo.dev/app/api-keys).
+3. Generate an API Key (Free tier includes 20 verifications per month).
 
 ---
 
-## 📄 License
+## License
 
-MIT License — Developed by [IWEB](https://github.com/IWEBai) & [Railo Security](https://railo.dev).
+MIT License. Developed by [IWEB](https://github.com/IWEBai) and [Railo Security](https://railo.dev).
