@@ -1,0 +1,49 @@
+{
+  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/servers/main/schema.json",
+  "name": "railo-security",
+  "description": "Deterministic AST vulnerability remediation and formal verification for AI coding agents.",
+  "homepage": "https://railo.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IWEBai/railo-mcp"
+  },
+  "author": {
+    "name": "IWEB & Railo Security",
+    "url": "https://railo.dev"
+  },
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "formal-verification",
+    "z3",
+    "ast",
+    "cwe",
+    "cursor",
+    "claude"
+  ],
+  "transport": {
+    "type": "stdio"
+  },
+  "command": "uvx",
+  "args": ["railo-mcp"],
+  "environment": {
+    "RAILO_API_KEY": {
+      "description": "Your Railo MCP API key (free tier available at https://railo.dev/app/api-keys)",
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "explain_vulnerability",
+      "description": "Retrieve the formal First-Order Logic safety invariant and canonical AST remediation blueprint for a CWE."
+    },
+    {
+      "name": "verify_syntax",
+      "description": "Verify that proposed code is syntactically sound and parses into a valid Abstract Syntax Tree without grammar errors."
+    },
+    {
+      "name": "verify_security_patch",
+      "description": "Formally verify whether an AI-generated patch eliminates a vulnerability without introducing regressions."
+    }
+  ]
+}

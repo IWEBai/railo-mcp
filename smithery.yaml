@@ -1,0 +1,12 @@
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      RAILO_API_KEY:
+        type: string
+        description: "Your Railo MCP API key (optional for free local tools, get from https://railo.dev/app/api-keys)"
+  commandFunction:
+    python:
+      - "-m"
+      - "railo_mcp.server"
